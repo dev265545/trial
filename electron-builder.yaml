@@ -1,0 +1,6 @@
+appId: "io.github.guptadev265.electron-next"
+productName: "Electron Next.JS"
+copyright: "Copyright "
+win:
+  target: ["dir", "portable", "zip"]
+  icon: "resources/icon.ico"
