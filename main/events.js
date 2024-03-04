@@ -34,6 +34,16 @@ const init = (appWindow) => {
       }
     });
   });
+  ipcMain.on("loginTrial", (event, data) => {
+    // Retrieve all items from the database
+    database.login(data, (response) => {
+      if (!response.success) {
+        event.reply("loginresult", response);
+      } else {
+        event.reply("loginresult", response);
+      }
+    });
+  });
 
   ipcMain.on("getAllItems", (event) => {
     // Retrieve all items from the database
@@ -47,6 +57,7 @@ const init = (appWindow) => {
   });
 
   ipcMain.on("updateItem", (event, data) => {
+    console.log("updateItem", data);
     // Update an item in the database
     database.updateData(data, (response) => {
       event.reply("crudResult", response);
@@ -55,7 +66,8 @@ const init = (appWindow) => {
 
   ipcMain.on("deleteItem", (event, data) => {
     // Delete an item from the database
-    database.deleteData(data.id, (response) => {
+    console.log("deleteItem", data);
+    database.deleteData(data, (response) => {
       event.reply("crudResult", response);
     });
   });

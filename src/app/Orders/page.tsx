@@ -1,9 +1,10 @@
 "use client";
 import Navigation from "@/components/Navigation";
-import NewOrderModal from "@/components/NewOrderModal";
+import NewOrderModal, { Order } from "@/components/NewOrderModal";
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 
+export type ModalOperation = () => void;
 const Orders = () => {
   const [openModal, setOpenModal] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -24,16 +25,17 @@ const Orders = () => {
   }, []);
 
   console.log(orders);
-  const ModalOperation = () => {
+  const ModalOperation: ModalOperation = () => {
     setOpenModal(!openModal);
+    getAllDataItems();
   };
 
   return (
     <div className="flex flex-col ">
-      {openModal && <NewOrderModal ModalOperation={ModalOperation} />}
       <nav>
         <Navigation />
-      </nav>{" "}
+      </nav>
+      {openModal && <NewOrderModal ModalOperation={ModalOperation} />}
       <div className="flex flex-col">
         <div className="p-2  font-extrabold text-3xl">Orders</div>
         <div className="p-2 rounded-xl">
@@ -48,7 +50,7 @@ const Orders = () => {
           </div>
         </div>
         <div className="flex flex-colZ">
-          {orders.map((order: any, index) => (
+          {orders.map((order: Order, index) => (
             <div key={index}>
               <div className="p-2 rounded-xl">
                 <div className="p-2 wavy w-[250px] h-[150px] rounded-xl ">

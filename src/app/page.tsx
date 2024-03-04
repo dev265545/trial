@@ -1,5 +1,6 @@
 "use client";
 import Navigation from "@/components/Navigation";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 const DashBoard = () => {
@@ -8,7 +9,8 @@ const DashBoard = () => {
       {" "}
       <nav>
         <Navigation />
-      </nav>{" "}
+      </nav>
+      hello
     </div>
   );
 };

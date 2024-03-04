@@ -1,19 +1,45 @@
 import React, { useEffect, useState } from "react";
 import DropDownBuilder from "./DropDownBuilder";
+import { ModalOperation } from "../app/Orders/page";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { FaEdit } from "react-icons/fa";
 
-const NewOrderModal = ({ ModalOperation }: any) => {
-  const [name, setName] = useState();
-  const [SNO, setSNO] = useState();
-  const [date, setDate] = useState();
-  const [partyName, setPartyName] = useState();
-  const [items, setItems] = useState([]);
-  const [Orderitems, setOrderItems] = useState<any[]>([]);
-  const [item, setItem] = useState();
+export type Item = {
+  Itemcode: string;
+  ItemName: string;
+  Weight: number;
+  cubicft: number;
+  quantity: number;
+};
+export type NewOrderModalProps = {
+  ModalOperation: ModalOperation;
+};
+export type Order = {
+  StationName: string;
+  SerialNo: string;
+  PartyName: string;
+  Date: string;
+  TotalQuantity: number;
+  TotalCubicFeet: number;
+  TotalFeet: number;
+  ItemsArray: Item[];
+};
+const NewOrderModal = ({ ModalOperation }: NewOrderModalProps) => {
+  const [name, setName] = useState<string>();
+  const [SNO, setSNO] = useState<string>();
+  const [date, setDate] = useState<string>();
+  const [partyName, setPartyName] = useState<string>();
+  const [items, setItems] = useState<Item[]>([]);
+  const [Orderitems, setOrderItems] = useState<Item[]>([]);
+  const [item, setItem] = useState<Item>();
   const [quantity, setQuantity] = useState(0);
-  const [Itemcode, setItemCode] = React.useState();
+  const [Itemcode, setItemCode] = useState<string>();
   const [editQuantityIndex, setEditQuantityIndex] = useState(10000);
   const [editModal, setEditModal] = useState(false);
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const payload = {
       StationName: name,
@@ -29,8 +55,9 @@ const NewOrderModal = ({ ModalOperation }: any) => {
     window.electronAPI.on("crudResult", (event, data) => {
       console.log(data);
     });
+    ModalOperation();
   };
-  const handleItemCode = (value: any) => {
+  const handleItemCode = (value: string) => {
     setItemCode(value);
   };
   const getAllDataItems = () => {
@@ -38,15 +65,16 @@ const NewOrderModal = ({ ModalOperation }: any) => {
     window.electronAPI.on("getAllItemsx", (event, data) => {
       setItems(data.data);
     });
+    console.log(items, "s");
   };
   const handleAddItem = () => {
-    const filterdata: any = items.filter(
-      (item: any) => item.Itemcode === Itemcode
+    const filterdata: Item = items.filter(
+      (item: Item) => item.Itemcode === Itemcode
     )[0];
     console.log(filterdata);
     console.log(quantity);
-    const newData = {
-      ItemCode: Itemcode,
+    const newData: Item = {
+      Itemcode: Itemcode != undefined ? Itemcode : "",
       ItemName: filterdata.ItemName,
       Weight: filterdata.Weight,
       cubicft: filterdata.cubicft,
@@ -55,7 +83,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
 
     console.log(newData);
 
-    setOrderItems((prevArray) => [...prevArray, newData]);
+    setOrderItems((prevArray: Item[]) => [...prevArray, newData]);
   };
   useEffect(() => {
     console.log("xx", Orderitems); // This will log the updated Orderitems
@@ -74,7 +102,11 @@ const NewOrderModal = ({ ModalOperation }: any) => {
     },
     { cubicft: 0, quantity: 0, feet: 0 }
   );
-  const handleDeleteItem = (index: any) => {
+  const handleDeleteItem = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    e.preventDefault();
     setOrderItems((prevArray) => {
       const newArray = [...prevArray];
       newArray.splice(index, 1);
@@ -82,7 +114,12 @@ const NewOrderModal = ({ ModalOperation }: any) => {
     });
   };
   const [newQuantity, setNewQuantity] = useState(0);
-  const handleEditQuantity = (index: any, newQuantity: any) => {
+  const handleEditQuantity = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+    newQuantity: number
+  ) => {
+    e.preventDefault();
     setOrderItems((prevArray) => {
       const newArray = [...prevArray];
       if (newArray[index]?.quantity !== undefined) {
@@ -143,7 +180,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                   name="name"
                   id="name"
                   value={name}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setName(e.target.value);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -161,7 +198,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                   type="text"
                   name="brand"
                   id="brand"
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setSNO(e.target.value);
                   }}
                   value={SNO}
@@ -181,7 +218,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                   value={partyName}
                   name="partyName"
                   id="partyName"
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setPartyName(e.target.value);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -198,7 +235,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                 <input
                   type="date"
                   value={date}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setDate(e.target.value);
                   }}
                   name="Date"
@@ -219,7 +256,7 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                   </label>
                   <DropDownBuilder
                     items={items}
-                    Itemcode={Itemcode}
+                    ItemCode={Itemcode != undefined ? Itemcode : ""}
                     handleItemCode={handleItemCode}
                   />
                 </div>
@@ -236,8 +273,8 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                     value={quantity}
                     name="quantity"
                     id="quantity"
-                    onChange={(e: any) => {
-                      setQuantity(e.target.value);
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setQuantity(parseInt(e.target.value));
                     }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     placeholder="Quantity"
@@ -300,13 +337,13 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Orderitems?.map((item: any, index: any) => (
+                  {Orderitems?.map((item: Item, index: number) => (
                     <tr className="bg-white dark:bg-gray-800">
                       <th
                         scope="row"
                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        {item.ItemCode}
+                        {item.Itemcode}
                       </th>
                       <th
                         scope="row"
@@ -320,17 +357,47 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                         {item.cubicft * item.quantity}
                       </td>
                       <td className="px-6 py-4">
+                        <Popover>
+                          <PopoverTrigger className=" text-center ">
+                            <FaEdit className="text-lg" />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <div className="grid gap-4">
+                              <div className="space-y-2">
+                                <h4 className="font-medium leading-none">
+                                  Edit Item
+                                </h4>
+                                <p className="text-sm text-muted-foreground"></p>
+                              </div>
+                              <div className="grid gap-2">
+                                <div className="grid grid-cols-3 items-center gap-4">
+                                  <Label htmlFor="width">ItemCode</Label>
+                                  <Input
+                                    onChange={(e) =>
+                                      setNewQuantity(parseInt(e.target.value))
+                                    }
+                                    id="width"
+                                    type="number"
+                                    name="Itemcode"
+                                    defaultValue={item.quantity}
+                                    className="col-span-2 h-8"
+                                  />
+                                </div>
+
+                                <Button
+                                  onClick={(e) =>
+                                    handleEditQuantity(e, index, newQuantity)
+                                  }
+                                  variant="default"
+                                >
+                                  Submit
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                         <button
-                          onClick={() => {
-                            setEditQuantityIndex(index);
-                            setEditModal(!editModal);
-                          }}
-                          className="text-blue-700 hover:underline"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteItem(index)}
+                          onClick={(e) => handleDeleteItem(e, index)}
                           className="text-red-600 ml-2 hover:underline"
                         >
                           Delete
@@ -423,8 +490,9 @@ const NewOrderModal = ({ ModalOperation }: any) => {
                 <button
                   data-modal-hide="static-modal"
                   type="button"
-                  onClick={() => {
-                    handleEditQuantity(editQuantityIndex, newQuantity);
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEditQuantity(e, editQuantityIndex, newQuantity);
                     setEditModal(!editModal);
                   }}
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

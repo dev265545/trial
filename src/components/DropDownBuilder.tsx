@@ -16,8 +16,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Item } from "./NewOrderModal";
 
-const DropDownBuilder = ({ items, Itemcode, handleItemCode }: any) => {
+export type DropDownBuilderProps = {
+  items: Item[];
+  ItemCode: string;
+  handleItemCode: (value: string) => void;
+};
+const DropDownBuilder = ({
+  items,
+  ItemCode,
+  handleItemCode,
+}: DropDownBuilderProps) => {
+  console.log("DropDownBuilder", ItemCode, items);
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -32,7 +43,7 @@ const DropDownBuilder = ({ items, Itemcode, handleItemCode }: any) => {
           className="w-[200px] justify-between"
         >
           {" "}
-          {Itemcode}
+          {ItemCode}
           {/* {value ? value != undefined : "Search Items ...."} */}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -42,11 +53,11 @@ const DropDownBuilder = ({ items, Itemcode, handleItemCode }: any) => {
           <CommandInput placeholder="Search Items..." />
           <CommandEmpty>No Items Found.</CommandEmpty>
           <CommandGroup>
-            {items?.map((item: any, index: any) => (
+            {items?.map((item: Item, index: number) => (
               <CommandItem
                 key={index}
                 value={item.Itemcode}
-                onSelect={(currentValue) => {
+                onSelect={(currentValue: string) => {
                   setValue(currentValue === value ? "" : currentValue);
                   setOpen(false);
                   handleItemCode(item.Itemcode);
